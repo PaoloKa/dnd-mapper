@@ -25,7 +25,7 @@ export const NavBar = () => {
             letterSpacing: "3px", // Slight letter spacing for a more ancient feel
           }}
         >
-          D&amp;D Mapper
+          DnD Mapper
         </Typography>
 
         {/* Navigation buttons */}

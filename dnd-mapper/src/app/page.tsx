@@ -30,7 +30,6 @@ export default function Home() {
           <Link
             href={"/map"}
             className={styles.primary}
-            target="_blank"
             rel="noopener noreferrer"
           >
             Create new map

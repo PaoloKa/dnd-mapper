@@ -29,10 +29,9 @@ const MapBuilder = () => {
           display: "flex",
           height: "100%",
           width: "100%",
-          padding: "1rem",
           border: "solid black 1px",
           justifyContent: "center",
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         <MapCanvas />

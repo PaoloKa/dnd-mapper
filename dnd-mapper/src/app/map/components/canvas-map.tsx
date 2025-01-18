@@ -8,6 +8,7 @@ import {
   FabricImage,
   PatternBrush,
   CircleBrush,
+  SprayBrush,
 } from "fabric";
 import { useMapStore } from "../../store";
 
@@ -16,7 +17,6 @@ type MapCanvasProps = {};
 const MapCanvas: FC<MapCanvasProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasObjectRef = useRef<Canvas | null>(null);
-  const [brushTexture, setBrushTexture] = useState<FabricImage | null>(null);
 
   useEffect(() => {
     const updateCanvasSize = () => {
@@ -95,18 +95,46 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
     drawGrid(canvas);
 
     canvasObjectRef.current = canvas;
+    useMapStore.setState({ canvas });
 
     return () => {
       canvas.dispose();
     };
   }, []);
 
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const assetUrl = event.dataTransfer.getData("assetUrl");
+
+    const canvasContainer = event.target.getBoundingClientRect();
+
+    // Calculate mouse position relative to canvas
+    const mouseX = event.clientX - canvasContainer.left;
+    const mouseY = event.clientY - canvasContainer.top;
+
+    FabricImage.fromURL(assetUrl).then((img) => {
+      img.set({
+        left: mouseX,
+        top: mouseY,
+        scaleX: 0.5,
+        scaleY: 0.5,
+        selectable: true,
+      });
+      img.setControlsVisibility({ mtr: true });
+      const canvas = canvasObjectRef.current;
+      if (canvas) {
+        canvas.add(img);
+        canvas.renderAll();
+      }
+    });
+  };
+
   useEffect(() => {
-    if (!canvasObjectRef.current) return;
-    console.log("Active tool changed");
     const unsubscribe = useMapStore.subscribe((state, oldState) => {
+      console.log("Setting active tool", state.activeTool);
       const canvas = canvasObjectRef.current;
       if (state.activeTool && canvas) {
+        console.log("Setting active tool", state.activeTool);
         switch (state.activeTool) {
           case "draw":
             if (state.drawOptions.texture) {
@@ -115,20 +143,20 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
 
               const textureBrush = new PatternBrush(canvas);
               textureBrush.source = image;
-              // textureBrush. = state.drawOptions.size / image.width;
-              // textureBrush.scaleY = state.drawOptions.size / image.height;
 
               canvas.freeDrawingBrush = textureBrush;
+            } else if (state.drawOptions.brushType === "spray") {
+              canvas.freeDrawingBrush = new SprayBrush(canvas);
             } else {
               canvas.freeDrawingBrush = new PencilBrush(canvas);
             }
-
             canvas.freeDrawingBrush!.width = state.drawOptions.size * 3;
             canvas.freeDrawingBrush!.color = state.drawOptions.color;
 
             canvas.isDrawingMode = true;
             break;
           case "pan":
+          case "move":
             canvas.isDrawingMode = false;
             break;
           default:
@@ -139,37 +167,11 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
     () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const image = new Image();
-    image.src =
-      "https://forgottenadventures.piwigo.com/_datas/w/s/l/wslrhsw6z4/i/uploads/w/s/l/wslrhsw6z4//2021/06/23/20210623133616-773daf05-me.png";
-    // Set the brush texture to be the one loaded
-    const canvas = canvasObjectRef.current;
-    if (canvas) {
-      const textureBrush = new PatternBrush(canvas);
-      textureBrush.source = image;
-      canvas.freeDrawingBrush = textureBrush;
-      canvas.freeDrawingBrush.width = 30;
-    }
-  }, [brushTexture]);
-
-  const loadTexture = (src: string) => {
-    FabricImage.fromURL(src).then((image) => {
-      if (!image) return;
-      // Scale the texture to fit the brush size
-      image.scaleToWidth(50); // Adjust the width of the texture as needed
-      image.scaleToHeight(50); // Adjust the height of the texture as needed
-      setBrushTexture(image); // Store the texture image
-    });
-  };
-
-  useEffect(() => {
-    loadTexture(
-      "https://i.pinimg.com/originals/76/27/4c/76274c56165d134fea4db2df9ada8dea.jpg"
-    );
-  }, []);
-
-  return <canvas ref={canvasRef} />;
+  return (
+    <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
 };
 
 export default MapCanvas;

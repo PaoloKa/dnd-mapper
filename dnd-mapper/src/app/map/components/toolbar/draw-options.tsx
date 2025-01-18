@@ -9,13 +9,12 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import { use, useState } from "react";
+import { useState } from "react";
 import ColorPicker from "@rc-component/color-picker";
 import "@rc-component/color-picker/assets/index.css";
 import { useMapStore } from "../../../store";
-import { Texture } from "../../../types";
+import { Brush, Texture } from "../../../types";
 import PaletteIcon from "@mui/icons-material/Palette";
-import { Label } from "@mui/icons-material";
 
 // TODO resize textures
 const textures = [
@@ -32,6 +31,18 @@ const textures = [
     name: "Dirt road",
     src: "https://i.pinimg.com/736x/47/aa/1f/47aa1fd416c8efb6904292bdd9209a02.jpg",
   },
+  {
+    name: "mossy cobblestone",
+    src: "https://i.pinimg.com/736x/6d/7f/a9/6d7fa9b3844ebb1431a3471f2db9474f.jpg",
+  },
+  {
+    name: "wooden floor",
+    src: "https://i.pinimg.com/736x/ee/85/c5/ee85c523aafff237f32416e5fe276114.jpg",
+  },
+  {
+    name: "ocean water",
+    src: "https://i.pinimg.com/736x/f1/a7/ed/f1a7ed42b092b013089dafb1774ef2ea.jpg",
+  },
 ];
 
 export const DrawOptions = () => {
@@ -39,15 +50,8 @@ export const DrawOptions = () => {
   const [texture, setTexture] = useState<Texture | undefined>(undefined);
   const [color, setColor] = useState("#000000");
   const activeColor = useMapStore((state) => state.drawOptions.color);
-  const [brushType, setBrushType] = useState<"pencil" | "spray" | "texture">(
-    "pencil"
-  );
-
-  const textures = [
-    { name: "Brick Road", src: "path/to/brick-road-texture.jpg" },
-    { name: "Gravel", src: "path/to/gravel-texture.jpg" },
-    // Add more textures as needed
-  ];
+  const [brushType, setBrushType] = useState<Brush>("pencil");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   return (
     <Box
@@ -56,10 +60,10 @@ export const DrawOptions = () => {
         borderRadius: "8px",
         boxShadow: 2,
         padding: 2,
-        maxWidth: 400,
+        width: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "center",
       }}
     >
@@ -69,7 +73,7 @@ export const DrawOptions = () => {
 
       {/* Brush Type Selection */}
       <FormControl fullWidth margin="normal">
-      <Typography>Brush Type</Typography>
+        <Typography>Brush Type</Typography>
         <Select
           value={brushType}
           onChange={(e) =>
@@ -89,49 +93,60 @@ export const DrawOptions = () => {
           value={lineWidth}
           onChange={(e, newValue) => setLineWidth(newValue as number)}
           min={1}
-          max={20}
+          max={100}
           valueLabelDisplay="auto"
         />
       </FormControl>
 
-      {/* Texture Selection */}
       {brushType === "texture" && (
         <FormControl fullWidth margin="normal">
-          <InputLabel>Texture</InputLabel>
-          <Select
-            value={texture?.src || ""}
-            onChange={(e) => setTexture({ name: "", src: e.target.value })}
-          >
-            <MenuItem value="">None</MenuItem>
-            {textures.map((texture) => (
-              <MenuItem key={texture.name} value={texture.src}>
-                {texture.name}
-              </MenuItem>
-            ))}
-          </Select>
+          <Typography variant="h6">Textures</Typography>
+          {textures.map((texture) => (
+            <Box
+              key={texture.name}
+              onClick={() => setTexture(texture)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.5rem",
+                cursor: "pointer",
+                ":hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              <img
+                src={texture.src}
+                alt={texture.name}
+                style={{ width: "50px", height: "50px" }}
+              />
+              <Typography>{texture.name}</Typography>
+            </Box>
+          ))}
         </FormControl>
       )}
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Color</InputLabel>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            style={{
-              backgroundColor: activeColor,
-              borderRadius: "50%",
-              marginRight: "8px",
-            }}
-            onClick={() => setColor("")} // Open color picker dialog
-          >
-            <PaletteIcon />
-          </IconButton>
-          {color && (
-            <ColorPicker
-              value={color}
-              onChange={(e) => setColor(e.toHexString())}
-            />
-          )}
-        </Box>
-      </FormControl>
+      {(brushType === "pencil" || brushType === "spray") && (
+        <FormControl fullWidth margin="normal">
+          <Typography>Color</Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              style={{
+                backgroundColor: color ? color : activeColor,
+                borderRadius: "50%",
+                marginRight: "8px",
+                height: "40px",
+                width: "40px",
+              }}
+              onClick={() => setShowColorPicker(true)} // Open color picker dialog
+            ></IconButton>
+            {showColorPicker && (
+              <ColorPicker
+                value={color}
+                onChange={(e) => setColor(e.toHexString())}
+              />
+            )}
+          </Box>
+        </FormControl>
+      )}
 
       {/* Apply Button */}
       <Button
@@ -139,6 +154,7 @@ export const DrawOptions = () => {
           useMapStore.setState({
             drawOptions: {
               size: lineWidth,
+              brushType,
               texture: texture ? texture : undefined,
               color,
             },

@@ -1,15 +1,54 @@
 import { Box, TextField, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const assets = [
   "trees/34196_Spell_Component_Tree_Heart_Orange_1x1_200x200.png",
   "trees/38718_Pine_Tree_Shadow_Snow_A2_5x5_1000x1000.png",
   "trees/60454_Tree_Green_B3_5x5_1000x1000.png",
+  "trees/38453_Bare_Tree_Shadow_Ashen_B10_9x10_1800x2000.png",
 ];
 
 export const AssetOptions = () => {
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch the catalog.json file from the public folder
+    const fetchCatalog = async () => {
+      try {
+        const response = await fetch("/catalog.json"); // File located in the public folder
+        const data = await response.json();
+
+        // Flatten the catalog data
+        const flattenAssets = (items) => {
+          let flat = [];
+          items.forEach((item) => {
+            if (item.folder) {
+              flat = flat.concat(flattenAssets(item.assets)); // Recursively handle nested folders
+            } else {
+              flat.push(item); // Add the asset
+            }
+          });
+          return flat;
+        };
+
+        setAssets(flattenAssets(data)); // Set the flattened assets
+      } catch (error) {
+        console.error("Error fetching catalog:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCatalog();
+  }, []);
+
   const handleDragStart = (event, asset) => {
     event.dataTransfer.setData("assetUrl", `/assets/${asset}`);
   };
+
+  if (loading) {
+    return <div>Loading assets...</div>;
+  }
 
   return (
     <Box
@@ -34,12 +73,14 @@ export const AssetOptions = () => {
           justifyContent: "center", // Center items horizontally
           alignItems: "center", // Align items vertically
           padding: "1rem",
+          overflow: "auto", // Allow scrolling when content overflows
+          maxHeight: "750px", // Define max height for the scrollable area
         }}
       >
         {assets.map((asset) => (
           <Box
             key={asset}
-            onDragStart={(event) => handleDragStart(event, asset)} // Make draggable
+            onDragStart={(event) => handleDragStart(event, "trees/" + asset)} // Make draggable
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -56,7 +97,7 @@ export const AssetOptions = () => {
             }}
           >
             <img
-              src={`/assets/${asset}`}
+              src={`/assets/trees/${asset}`}
               alt={asset}
               style={{
                 width: "50px",

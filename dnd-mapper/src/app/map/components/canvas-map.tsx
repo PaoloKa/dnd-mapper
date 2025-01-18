@@ -116,8 +116,8 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
       img.set({
         left: mouseX,
         top: mouseY,
-        scaleX: 0.5,
-        scaleY: 0.5,
+        scaleX: 0.2,
+        scaleY: 0.2,
         selectable: true,
       });
       img.setControlsVisibility({ mtr: true });

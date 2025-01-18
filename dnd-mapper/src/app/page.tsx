@@ -1,3 +1,4 @@
+"use client";
 import styles from "./page.module.css";
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
@@ -7,6 +8,7 @@ export default function Home() {
     <Box
       className={styles.page}
       sx={{
+        width: "100%",
         backgroundImage: `url("https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/d-d-farmer-background.jpg")`,
       }}
     >

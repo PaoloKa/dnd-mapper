@@ -1,0 +1,1 @@
+export type ToolType = 'draw' | 'select' | 'move' | 'delete' | 'zoom' | 'pan';

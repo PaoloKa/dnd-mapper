@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Canvas,
-  Line,
-  PencilBrush,
-  Circle,
-  FabricImage,
-  PatternBrush,
-} from "fabric";
+import React, { FC, useEffect, useRef, useState } from "react";
+import { Canvas, Line, PencilBrush, FabricImage, PatternBrush } from "fabric";
+import { ToolType } from "../../types";
 
-const MapCanvas = () => {
+type MapCanvasProps = {
+  activeTool: ToolType;
+};
+
+const MapCanvas: FC<MapCanvasProps> = ({ activeTool }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isPainting, setIsPainting] = useState(false);
   const canvasObjectRef = useRef<Canvas | null>(null);
   const [brushTexture, setBrushTexture] = useState<FabricImage | null>(null);
 
@@ -68,8 +65,23 @@ const MapCanvas = () => {
       canvas.dispose();
     };
   }, []);
+
   useEffect(() => {
-    const imageUrl = "path/to/your/image.png";
+    if (!canvasObjectRef.current) return;
+    const canvas = canvasObjectRef.current;
+    switch (activeTool) {
+      case "draw":
+        canvas.isDrawingMode = true;
+        break;
+      case "pan":
+        canvas.isDrawingMode = false;
+        break;
+      default:
+        break;
+    }
+  }, [activeTool]);
+
+  useEffect(() => {
     const image = new Image();
     image.src =
       "https://forgottenadventures.piwigo.com/_datas/w/s/l/wslrhsw6z4/i/uploads/w/s/l/wslrhsw6z4//2021/06/23/20210623133616-773daf05-me.png";
@@ -80,9 +92,8 @@ const MapCanvas = () => {
       textureBrush.source = image;
       canvas.freeDrawingBrush = textureBrush;
       canvas.freeDrawingBrush.width = 30;
-      canvas.isDrawingMode = true;
     }
-  }, [isPainting, brushTexture]);
+  }, [brushTexture]);
 
   const loadTexture = (src: string) => {
     FabricImage.fromURL(src).then((image) => {
@@ -94,10 +105,6 @@ const MapCanvas = () => {
     });
   };
 
-  const togglePainting = () => {
-    setIsPainting((prev) => !prev);
-  };
-
   useEffect(() => {
     loadTexture(
       "https://i.pinimg.com/originals/76/27/4c/76274c56165d134fea4db2df9ada8dea.jpg"
@@ -107,9 +114,6 @@ const MapCanvas = () => {
   return (
     <div>
       <canvas ref={canvasRef} />
-      <button onClick={togglePainting}>
-        {isPainting ? "Stop Painting" : "Start Painting"}
-      </button>
     </div>
   );
 };

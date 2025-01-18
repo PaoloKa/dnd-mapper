@@ -1,14 +1,13 @@
 "use client";
 
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Canvas, Line, PencilBrush, FabricImage, PatternBrush } from "fabric";
+import { Canvas, Line, PencilBrush, FabricImage, PatternBrush, CircleBrush } from "fabric";
 import { ToolType } from "../../types";
+import { useMapStore } from "../../store";
 
-type MapCanvasProps = {
-  activeTool: ToolType;
-};
+type MapCanvasProps = {};
 
-const MapCanvas: FC<MapCanvasProps> = ({ activeTool }) => {
+const MapCanvas: FC<MapCanvasProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasObjectRef = useRef<Canvas | null>(null);
   const [brushTexture, setBrushTexture] = useState<FabricImage | null>(null);
@@ -68,18 +67,41 @@ const MapCanvas: FC<MapCanvasProps> = ({ activeTool }) => {
 
   useEffect(() => {
     if (!canvasObjectRef.current) return;
-    const canvas = canvasObjectRef.current;
-    switch (activeTool) {
-      case "draw":
-        canvas.isDrawingMode = true;
-        break;
-      case "pan":
-        canvas.isDrawingMode = false;
-        break;
-      default:
-        break;
-    }
-  }, [activeTool]);
+    console.log("Active tool changed");
+    const unsubscribe = useMapStore.subscribe((state, oldState) => {
+      const canvas = canvasObjectRef.current;
+      if (state.activeTool && canvas) {
+        switch (state.activeTool) {
+          case "draw":
+            console.log("Setting draw mode");
+            console.log(state.drawOptions);
+            if (state.drawOptions.texture) {
+              const image = new Image();
+              image.src =
+                "https://forgottenadventures.piwigo.com/_datas/w/s/l/wslrhsw6z4/i/uploads/w/s/l/wslrhsw6z4//2021/06/23/20210623133616-773daf05-me.png";
+              // Set the brush texture to be the one loaded
+              const textureBrush = new PatternBrush(canvas);
+              textureBrush.source = image;
+              canvas.freeDrawingBrush = textureBrush;
+            } else {
+              canvas.freeDrawingBrush = new PencilBrush(canvas);
+            }
+
+            canvas.freeDrawingBrush!.width = state.drawOptions.size;
+            canvas.freeDrawingBrush!.color = state.drawOptions.color;
+
+            canvas.isDrawingMode = true;
+            break;
+          case "pan":
+            canvas.isDrawingMode = false;
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const image = new Image();

@@ -1,14 +1,23 @@
 import { Draw } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
-import { FC } from "react";
-import { ToolType } from "../../../types";
+import {
+  Box,
+  IconButton,
 
-type ToolbarProps = {
-  activeTool: string;
-  setActiveTool: (tool: ToolType) => void;
-};
+} from "@mui/material";
+import { FC, useState } from "react";
+import { useMapStore } from "../../../store";
+import { DrawOptions } from "./draw-options";
 
-export const Toolbar: FC<ToolbarProps> = ({ activeTool, setActiveTool }) => {
+type ToolbarProps = {};
+
+export const Toolbar: FC<ToolbarProps> = ({}) => {
+  const [showDrawOptions, setShowDrawOptions] = useState(false);
+
+  const handleDrawClick = () => {
+    setShowDrawOptions(!showDrawOptions);
+    useMapStore.setState({ activeTool: "draw" });
+  };
+
   return (
     <Box
       sx={{
@@ -17,11 +26,14 @@ export const Toolbar: FC<ToolbarProps> = ({ activeTool, setActiveTool }) => {
         width: "50px",
         display: "flex",
         flexDirection: "column",
+        position: "relative",
       }}
     >
-      <IconButton onClick={() => setActiveTool("draw")}>
+      <IconButton onClick={handleDrawClick}>
         <Draw />
       </IconButton>
+
+      {showDrawOptions && <DrawOptions />}
     </Box>
   );
 };

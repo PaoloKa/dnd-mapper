@@ -53,6 +53,8 @@ export const DrawOptions = () => {
   const [brushType, setBrushType] = useState<Brush>("pencil");
   const [showColorPicker, setShowColorPicker] = useState(false);
 
+  console.log(texture);
+
   return (
     <Box
       sx={{
@@ -101,10 +103,9 @@ export const DrawOptions = () => {
       {brushType === "texture" && (
         <FormControl fullWidth margin="normal">
           <Typography variant="h6">Textures</Typography>
-          {textures.map((texture) => (
+          {textures.map((textureValue, index) => (
             <Box
-              key={texture.name}
-              onClick={() => setTexture(texture)}
+              onClick={() => setTexture(textureValue)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -112,14 +113,16 @@ export const DrawOptions = () => {
                 padding: "0.5rem",
                 cursor: "pointer",
                 ":hover": { backgroundColor: "#f0f0f0" },
+                backgroundColor:
+                  textureValue.src === texture?.src ? "#D52A2A" : "white",
               }}
             >
               <img
-                src={texture.src}
-                alt={texture.name}
+                src={textureValue.src}
+                alt={textureValue.name}
                 style={{ width: "50px", height: "50px" }}
               />
-              <Typography>{texture.name}</Typography>
+              <Typography>{textureValue.name}</Typography>
             </Box>
           ))}
         </FormControl>

@@ -62,7 +62,7 @@ export const AssetOptions = () => {
         backgroundColor: "white",
       }}
     >
-      <Typography>Asset Options</Typography>
+      <Typography variant="h5">Asset Library</Typography>
       {/* <Typography>Search</Typography> */}
       {/* <TextField sx={{ width: "100%" }} /> */}
       <Box

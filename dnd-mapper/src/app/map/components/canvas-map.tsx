@@ -9,6 +9,8 @@ import {
   PatternBrush,
   CircleBrush,
   SprayBrush,
+  Rect,
+  Triangle,
 } from "fabric";
 import { useMapStore } from "../../store";
 
@@ -157,6 +159,10 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
             break;
           case "pan":
           case "move":
+            canvas.getObjects().forEach((obj) => {
+              if(obj.type !== "image")
+              obj.set({ selectable: false });
+            });
             canvas.isDrawingMode = false;
             break;
           default:

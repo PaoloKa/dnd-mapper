@@ -31,7 +31,6 @@ export default function RootLayout({
         <Box
           sx={{
             backgroundImage: `url("https://static1.srcdn.com/wordpress/wp-content/uploads/2024/08/d-d-farmer-background.jpg")`,
-            minHeight: "100vh",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",

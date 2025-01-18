@@ -35,15 +35,10 @@ export const NavBar = () => {
               color="inherit"
               startIcon={<HomeIcon />}
               sx={{
-                fontFamily: "'Cinzel', serif", // Medieval font for buttons
-                fontSize: "1.1rem",
-                textTransform: "none",
-                marginRight: 2,
-                borderRadius: "10px",
-                "&:hover": {
-                  backgroundColor: "#FFD700",
-                  color: "black",
-                },
+                flexGrow: 1,
+                fontFamily: "'Uncial Antiqua', serif", // Fantasy-style font
+                color: "#D52A2A", // Bold, D&D-themed red
+                textShadow: "2px 2px 4px #000000", // Adds a dramatic shadow
               }}
             >
               Home

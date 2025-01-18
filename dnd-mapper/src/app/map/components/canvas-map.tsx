@@ -1,8 +1,14 @@
 "use client";
 
 import React, { FC, useEffect, useRef, useState } from "react";
-import { Canvas, Line, PencilBrush, FabricImage, PatternBrush, CircleBrush } from "fabric";
-import { ToolType } from "../../types";
+import {
+  Canvas,
+  Line,
+  PencilBrush,
+  FabricImage,
+  PatternBrush,
+  CircleBrush,
+} from "fabric";
 import { useMapStore } from "../../store";
 
 type MapCanvasProps = {};
@@ -13,13 +19,42 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
   const [brushTexture, setBrushTexture] = useState<FabricImage | null>(null);
 
   useEffect(() => {
+    const updateCanvasSize = () => {
+      console.log("Updating canvas size");
+      if (canvasObjectRef.current && canvasRef.current) {
+        const mapCanvas = document.getElementById("map-canvas");
+        if (mapCanvas) {
+          canvasObjectRef.current.setWidth(mapCanvas.clientWidth);
+          canvasObjectRef.current.setHeight(mapCanvas.clientHeight);
+          canvasObjectRef.current.renderAll();
+        }
+      }
+    };
+
+    updateCanvasSize();
+
+    // Add resize listener to adjust canvas size when the window or parent size changes
+    window.addEventListener("resize", updateCanvasSize);
+
+    // Clean up listener on component unmount
+    return () => {
+      window.removeEventListener("resize", updateCanvasSize);
+    };
+  }, []);
+
+  // Set initial size
+
+  useEffect(() => {
     if (!canvasRef.current) return;
 
+    console.log(canvasRef.current.clientWidth);
+
+    const mapCanvas = document.getElementById("map-canvas");
     // Initialize Fabric.js canvas
     const canvas = new Canvas(canvasRef.current, {
       backgroundColor: "#fff",
-      width: 800,
-      height: 600,
+      width: mapCanvas?.clientWidth!,
+      height: mapCanvas?.clientHeight!,
     });
 
     // Function to draw the grid
@@ -44,6 +79,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
           selectable: false,
           evented: false,
         });
+
         canvas.add(line);
       }
     };
@@ -73,21 +109,21 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
       if (state.activeTool && canvas) {
         switch (state.activeTool) {
           case "draw":
-            console.log("Setting draw mode");
-            console.log(state.drawOptions);
             if (state.drawOptions.texture) {
-              const image = new Image();
-              image.src =
-                "https://forgottenadventures.piwigo.com/_datas/w/s/l/wslrhsw6z4/i/uploads/w/s/l/wslrhsw6z4//2021/06/23/20210623133616-773daf05-me.png";
-              // Set the brush texture to be the one loaded
+              const image = new Image(10, 10);
+              image.src = state.drawOptions.texture.src;
+
               const textureBrush = new PatternBrush(canvas);
               textureBrush.source = image;
+              // textureBrush. = state.drawOptions.size / image.width;
+              // textureBrush.scaleY = state.drawOptions.size / image.height;
+
               canvas.freeDrawingBrush = textureBrush;
             } else {
               canvas.freeDrawingBrush = new PencilBrush(canvas);
             }
 
-            canvas.freeDrawingBrush!.width = state.drawOptions.size;
+            canvas.freeDrawingBrush!.width = state.drawOptions.size * 3;
             canvas.freeDrawingBrush!.color = state.drawOptions.color;
 
             canvas.isDrawingMode = true;
@@ -133,11 +169,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
     );
   }, []);
 
-  return (
-    <div>
-      <canvas ref={canvasRef} />
-    </div>
-  );
+  return <canvas ref={canvasRef} />;
 };
 
 export default MapCanvas;

@@ -38,16 +38,18 @@ Follow these steps to set up and run the RPG Map Builder locally.
    ```bash
    npm install
 Generate Asset Catalog
-Generate a catalog for the assets using:
+Generate a catalog for the assets using: 
 4. **Generate catalog**  
-npm run generate
+ ```bash
+   npm run geneate
+```
 Run the Development Server
-Start the application with:
+Start the application with: 
+ ```bash
+   npm run dev
+```
+http://localhost:3000 to start building your map!
 
-5. **Generate catalog**  
-npm run dev
-Open in Your Browser
-Visit http://localhost:3000 to start building your map!
 
 
 ### Contribution

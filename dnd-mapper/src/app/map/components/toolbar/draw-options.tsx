@@ -112,9 +112,12 @@ export const DrawOptions = () => {
                 gap: "0.5rem",
                 padding: "0.5rem",
                 cursor: "pointer",
+                borderRadius: "8px",
                 ":hover": { backgroundColor: "#f0f0f0" },
                 backgroundColor:
                   textureValue.src === texture?.src ? "#D52A2A" : "white",
+                color:
+                  textureValue.src === texture?.src ? "white" : "black",
               }}
             >
               <img

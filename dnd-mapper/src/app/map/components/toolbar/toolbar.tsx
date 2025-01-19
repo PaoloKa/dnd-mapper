@@ -3,7 +3,7 @@ import { Box, IconButton } from "@mui/material";
 import { FC, useState } from "react";
 import { useMapStore } from "../../../store";
 import { DrawOptions } from "./draw-options";
-import { AssetOptions } from "./asset-options";
+import { AssetOptions } from "./assets/asset-options";
 
 type ToolbarProps = {};
 

@@ -3,7 +3,9 @@ const path = require('path');
 
 // Path to the assets folder and catalog.json file
 const assetsDir = path.join(__dirname, "../../public/assets");
-const catalogFile = path.join(__dirname, "../../public/catalog.json");
+const texturesDir = path.join(__dirname, "../../public/textures");
+const catalogFile = path.join(__dirname, "../../public/catalog-assets.json");
+const textureCatalogFile = path.join(__dirname, "../../public/catalog-textures.json");
 
 
 // Recursive function to generate the catalog
@@ -26,8 +28,11 @@ const generateCatalog = (dir) => {
 
 // Generate the catalog by reading assets
 const catalog = generateCatalog(assetsDir);
+const textures = generateCatalog(texturesDir);
 
 // Save the catalog to the JSON file
 fs.writeFileSync(catalogFile, JSON.stringify(catalog, null, 2));
+fs.writeFileSync(textureCatalogFile, JSON.stringify(textures, null, 2));
 
 console.log('Catalog generated at:', catalogFile);  // Log the success message
+console.log('Catalog generated at:', textureCatalogFile);  // Log the success message

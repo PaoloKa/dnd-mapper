@@ -9,12 +9,13 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ColorPicker from "@rc-component/color-picker";
 import "@rc-component/color-picker/assets/index.css";
 import { useMapStore } from "../../../store";
 import { Brush, Texture } from "../../../types";
 import PaletteIcon from "@mui/icons-material/Palette";
+import { CatalogFolder } from "./assets/catalog-folder";
 
 // TODO resize textures
 const textures = [
@@ -47,13 +48,30 @@ const textures = [
 
 export const DrawOptions = () => {
   const [lineWidth, setLineWidth] = useState(5);
-  const [texture, setTexture] = useState<Texture | undefined>(undefined);
+  const [texture, setTexture] = useState<string | undefined>(undefined);
   const [color, setColor] = useState("#000000");
   const activeColor = useMapStore((state) => state.drawOptions.color);
   const [brushType, setBrushType] = useState<Brush>("pencil");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [catalog, setCatalog] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]);
 
-  console.log(texture);
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        const response = await fetch("/catalog-textures.json");
+        const data = await response.json();
+        setCatalog(data);
+      } catch (error) {
+        console.error("Error fetching catalog:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCatalog();
+  }, []);
 
   return (
     <Box
@@ -103,31 +121,34 @@ export const DrawOptions = () => {
       {brushType === "texture" && (
         <FormControl fullWidth margin="normal">
           <Typography variant="h6">Textures</Typography>
-          {textures.map((textureValue, index) => (
-            <Box
-              onClick={() => setTexture(textureValue)}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.5rem",
-                cursor: "pointer",
-                borderRadius: "8px",
-                ":hover": { backgroundColor: "#f0f0f0" },
-                backgroundColor:
-                  textureValue.src === texture?.src ? "#D52A2A" : "white",
-                color:
-                  textureValue.src === texture?.src ? "white" : "black",
-              }}
-            >
-              <img
-                src={textureValue.src}
-                alt={textureValue.name}
-                style={{ width: "50px", height: "50px" }}
+          <Box
+            sx={{
+              marginTop: "1rem",
+              width: "100%",
+              maxHeight: "440px",
+              overflow: "auto",
+            }}
+          >
+            {loading && <div>Loading textures...</div>}
+            {catalog && (
+              <CatalogFolder
+                type="textures"
+                folderData={{ folder: "textures", assets: catalog }}
+                favorites={favorites}
+                onItemClick={(data) => setTexture(data)}
+                addToFavorites={(data) =>
+                  setFavorites((prev) => [...prev, data])
+                }
               />
-              <Typography>{textureValue.name}</Typography>
-            </Box>
-          ))}
+            )}
+            <CatalogFolder
+              type="textures"
+              favorites={favorites}
+              onItemClick={(data) => setTexture(data)}
+              folderData={{ folder: "favorites", assets: favorites }}
+              addToFavorites={(data) => setFavorites((prev) => [...prev, data])}
+            />
+          </Box>
         </FormControl>
       )}
       {(brushType === "pencil" || brushType === "spray") && (
@@ -161,7 +182,7 @@ export const DrawOptions = () => {
             drawOptions: {
               size: lineWidth,
               brushType,
-              texture: texture ? texture : undefined,
+              texture: texture ? { src: texture, name: "remove" } : undefined,
               color,
             },
           });

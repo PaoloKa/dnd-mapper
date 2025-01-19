@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { AssetFolder } from "./asset-folder";
+import { CatalogFolder } from "./catalog-folder";
 
 export const AssetOptions = () => {
   const [catalog, setCatalog] = useState(null);
@@ -10,7 +10,7 @@ export const AssetOptions = () => {
   useEffect(() => {
     const fetchCatalog = async () => {
       try {
-        const response = await fetch("/catalog.json");
+        const response = await fetch("/catalog-assets.json");
         const data = await response.json();
         setCatalog(data);
       } catch (error) {
@@ -53,14 +53,16 @@ export const AssetOptions = () => {
         }}
       >
         {catalog && (
-          <AssetFolder
+          <CatalogFolder
+            type="assets"
             favorites={favorites}
             folderData={{ folder: "assets", assets: catalog }}
             addToFavorites={addToFavorites}
           />
         )}
         {
-          <AssetFolder
+          <CatalogFolder
+            type="assets"
             favorites={favorites}
             folderData={{ folder: "favorites", assets: favorites }}
             addToFavorites={addToFavorites}

@@ -13,12 +13,15 @@ import {
   Triangle,
 } from "fabric";
 import { useMapStore } from "../../store";
+import { Box, Button, IconButton, Typography } from "@mui/material";
+import { Add, PlusOne, Remove } from "@mui/icons-material";
 
 type MapCanvasProps = {};
 
 const MapCanvas: FC<MapCanvasProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasObjectRef = useRef<Canvas | null>(null);
+  const [zoomLevel, setZoomLevel] = useState(1); // Default zoom level
 
   useEffect(() => {
     const updateCanvasSize = () => {
@@ -133,10 +136,8 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
 
   useEffect(() => {
     const unsubscribe = useMapStore.subscribe((state, oldState) => {
-      console.log("Setting active tool", state.activeTool);
       const canvas = canvasObjectRef.current;
       if (state.activeTool && canvas) {
-        console.log("Setting active tool", state.activeTool);
         switch (state.activeTool) {
           case "draw":
             if (state.drawOptions.texture) {
@@ -160,8 +161,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
           case "pan":
           case "move":
             canvas.getObjects().forEach((obj) => {
-              if(obj.type !== "image")
-              obj.set({ selectable: false });
+              if (obj.type !== "image") obj.set({ selectable: false });
             });
             canvas.isDrawingMode = false;
             break;
@@ -173,10 +173,47 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
     () => unsubscribe();
   }, []);
 
+  const handleZoom = (zoomIn: boolean) => {
+    const canvas = canvasObjectRef.current;
+    if (canvas) {
+      const newZoom = zoomIn ? zoomLevel + 0.1 : zoomLevel - 0.1;
+
+      // Clamp zoom level between 0.5 and 2
+      const clampedZoom = Math.max(0.1, Math.min(newZoom, 4));
+      setZoomLevel(clampedZoom);
+      canvas.setZoom(clampedZoom);
+      canvas.requestRenderAll();
+    }
+  };
+
   return (
-    <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+    <Box onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
       <canvas ref={canvasRef} />
-    </div>
+      <Box
+        sx={{
+          position: "absolute",
+          right: "20px",
+          bottom: "20px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "10px",
+          background: "#fff",
+          border: "1px solid #ccc",
+          borderRadius: "8px",
+          padding: "10px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <IconButton onClick={() => handleZoom(false)}>
+          <Remove />
+        </IconButton>
+        <Typography variant="body2">{Math.round(zoomLevel * 100)}%</Typography>
+        <IconButton onClick={() => handleZoom(true)}>
+          <Add />
+        </IconButton>
+      </Box>
+    </Box>
   );
 };
 

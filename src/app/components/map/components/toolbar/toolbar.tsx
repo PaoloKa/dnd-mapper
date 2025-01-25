@@ -1,7 +1,7 @@
 import { Draw, Face, Forest, Mouse } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
 import { FC, useState } from "react";
-import { useMapStore } from "../../../store";
+import { useMapStore } from "../../../../store";
 import { DrawOptions } from "./draw-options";
 import { AssetOptions } from "./assets/asset-options";
 

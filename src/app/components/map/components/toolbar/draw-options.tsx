@@ -12,8 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import ColorPicker from "@rc-component/color-picker";
 import "@rc-component/color-picker/assets/index.css";
-import { useMapStore } from "../../../store";
-import { Brush, Texture } from "../../../types";
+import { useMapStore } from "../../../../store";
+import { Brush, Texture } from "../../../../types";
 import PaletteIcon from "@mui/icons-material/Palette";
 import { CatalogFolder } from "./assets/catalog-folder";
 

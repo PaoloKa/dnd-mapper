@@ -12,7 +12,7 @@ import {
   Rect,
   Triangle,
 } from "fabric";
-import { useMapStore } from "../../store";
+import { useMapStore } from "../../../store";
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { Add, PlusOne, Remove } from "@mui/icons-material";
 

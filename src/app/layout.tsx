@@ -4,7 +4,7 @@ import "./globals.css";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { NavBar } from "./components/navbar";
 import { SessionProvider } from "next-auth/react";
-import SessionProviderWrapper from "./components/session-provider-wrapper";
+import SessionProviderWrapper from "./components/auth/session-provider-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -2,6 +2,7 @@
 import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
 import Link from "next/link";
 import { Home as HomeIcon } from "@mui/icons-material";
+import AuthButton from "./auth-button";
 
 export const NavBar = () => {
   return (
@@ -44,6 +45,7 @@ export const NavBar = () => {
               Home
             </Button>
           </Link>
+          <AuthButton />
         </Box>
       </Toolbar>
     </AppBar>

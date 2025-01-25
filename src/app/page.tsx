@@ -1,6 +1,7 @@
 "use client";
 import styles from "./page.module.css";
 import { Box, Typography } from "@mui/material";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 export default function Home() {

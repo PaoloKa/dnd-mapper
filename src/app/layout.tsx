@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { NavBar } from "./components/navbar";
+import { SessionProvider } from "next-auth/react";
+import SessionProviderWrapper from "./components/session-provider-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <SessionProviderWrapper>
           <NavBar />
           <Box
             sx={{
@@ -50,6 +53,7 @@ export default function RootLayout({
           >
             {children}
           </Box>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

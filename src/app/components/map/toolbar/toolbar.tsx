@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from "react";
 
 import { AssetOptions } from "./assets/asset-options";
 import { DrawOptions } from "./draw-options";
+import { ToolbarButton } from "./toolbar-button";
 import { useMapStore } from "../../../store";
 
 type ContentOptions = "draw" | "users" | "assets";
@@ -11,6 +12,7 @@ type ContentOptions = "draw" | "users" | "assets";
 export const Toolbar: FC = ({}) => {
   const [content, setContent] = useState<ContentOptions>();
   const [loading, setLoading] = useState(true);
+  const activeTool = useMapStore((state) => state.activeTool);
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -46,29 +48,32 @@ export const Toolbar: FC = ({}) => {
           position: "relative",
         }}
       >
-        <IconButton onClick={() => handleDrawClick("draw")}>
-          <Draw sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }} />
-        </IconButton>
-        <IconButton
+        <ToolbarButton
+          Icon={Draw}
+          onClick={() => handleDrawClick("draw")}
+          active={content === "draw"}
+        />
+        <ToolbarButton
+          Icon={Mouse}
           onClick={() => useMapStore.setState({ activeTool: "move" })}
-        >
-          <Mouse sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }} />
-        </IconButton>
-        <IconButton
+          active={activeTool === "move"}
+        />
+        <ToolbarButton
+          Icon={PanTool}
           onClick={() => useMapStore.setState({ activeTool: "pan" })}
-        >
-          <PanTool
-            sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }}
-          />
-        </IconButton>
-        <IconButton onClick={() => handleDrawClick("users")}>
-          <Face sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }} />
-        </IconButton>
-        <IconButton onClick={() => handleDrawClick("assets")}>
-          <Forest
-            sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }}
-          />
-        </IconButton>
+          active={activeTool === "pan"}
+        />
+        <ToolbarButton
+          Icon={Face}
+          onClick={() => handleDrawClick("users")}
+          active={content === "users"}
+        />
+
+        <ToolbarButton
+          Icon={Forest}
+          onClick={() => handleDrawClick("assets")}
+          active={content === "assets"}
+        />
       </Box>
       {content && (
         <Box

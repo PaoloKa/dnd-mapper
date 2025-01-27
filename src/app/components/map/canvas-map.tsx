@@ -132,7 +132,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
   };
 
   useEffect(() => {
-    const unsubscribe = useMapStore.subscribe((state, oldState) => {
+    const unsubscribe = useMapStore.subscribe((state) => {
       const canvas = canvasObjectRef.current;
       if (state.activeTool && canvas) {
         switch (state.activeTool) {
@@ -167,7 +167,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
         }
       }
     });
-    () => unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const handleZoom = (zoomIn: boolean) => {

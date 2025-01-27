@@ -18,7 +18,7 @@ import { useMapStore } from "../../store";
 const MapCanvas: FC = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasObjectRef = useRef<Canvas | null>(null);
-  const [zoomLevel, setZoomLevel] = useState(1); // Default zoom level
+  const [zoomLevel, setZoomLevel] = useState(0.3); // Default zoom level
   const activeTool = useMapStore((state) => state.activeTool);
 
   useEffect(() => {
@@ -44,6 +44,7 @@ const MapCanvas: FC = ({}) => {
     };
   }, []);
 
+  // panning
   useEffect(() => {
     const canvas = canvasObjectRef.current;
     if (!canvas) return;
@@ -106,45 +107,9 @@ const MapCanvas: FC = ({}) => {
       backgroundColor: "#fff",
       width: mapCanvas?.clientWidth!,
       height: mapCanvas?.clientHeight!,
-      zoom: 0.1,
     });
 
-    // Function to draw the grid
-    const drawGrid = (canvas: Canvas) => {
-      const gridSize = 50;
-      const gridColor = "#ccc";
-
-      // Draw horizontal lines
-      for (let i = 0; i < canvas.height!; i += gridSize) {
-        const line = new Line([0, i, canvas.width!, i], {
-          stroke: gridColor,
-          selectable: false,
-          evented: false,
-        });
-        canvas.add(line);
-      }
-
-      // Draw vertical lines
-      for (let i = 0; i < canvas.width!; i += gridSize) {
-        const line = new Line([i, 0, i, canvas.height!], {
-          stroke: gridColor,
-          selectable: false,
-          evented: false,
-        });
-
-        canvas.add(line);
-      }
-    };
-
-    // Initialize the brush tool
-    const brush = new PencilBrush(canvas);
-    brush.width = 10; // Set brush size
-    brush.color = "green"; // Set brush color (for terrain)
-
-    canvas.freeDrawingBrush = brush;
-
-    // Draw the grid
-    drawGrid(canvas);
+    canvas.setZoom(zoomLevel);
 
     canvasObjectRef.current = canvas;
     useMapStore.setState({ canvas });

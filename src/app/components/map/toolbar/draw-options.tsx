@@ -156,7 +156,7 @@ export const DrawOptions = () => {
             drawOptions: {
               size: lineWidth,
               brushType,
-              texture: texture ? { src: texture, name: "remove" } : undefined,
+              texture: texture && brushType === 'texture' ? { src: texture, name: "remove" } : undefined,
               color,
             },
           });

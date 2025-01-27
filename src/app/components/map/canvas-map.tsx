@@ -1,19 +1,18 @@
 "use client";
 
-import React, { FC, useEffect, useRef, useState } from "react";
+import { Add, Remove } from "@mui/icons-material";
+import { Box, IconButton, Typography } from "@mui/material";
 import {
   Canvas,
-  Line,
-  PencilBrush,
   FabricImage,
+  Line,
   PatternBrush,
-  CircleBrush,
+  PencilBrush,
   SprayBrush,
-  Rect,
-  Triangle,
 } from "fabric";
-import { useMapStore } from "../../../../../src/app/store";
-import { Box } from "@mui/material";
+import React, { FC, useEffect, useRef, useState } from "react";
+
+import { useMapStore } from "../../store";
 
 type MapCanvasProps = {};
 
@@ -24,7 +23,6 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
 
   useEffect(() => {
     const updateCanvasSize = () => {
-      console.log("Updating canvas size");
       if (canvasObjectRef.current && canvasRef.current) {
         const mapCanvas = document.getElementById("map-canvas");
         if (mapCanvas) {
@@ -178,7 +176,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
       const newZoom = zoomIn ? zoomLevel + 0.1 : zoomLevel - 0.1;
 
       // Clamp zoom level between 0.5 and 2
-      const clampedZoom = Math.max(0.5, Math.min(newZoom, 2));
+      const clampedZoom = Math.max(0.1, Math.min(newZoom, 4));
       setZoomLevel(clampedZoom);
       canvas.setZoom(clampedZoom);
       canvas.requestRenderAll();
@@ -186,13 +184,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
   };
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-      }}
-      onDrop={handleDrop}
-      onDragOver={(e) => e.preventDefault()}
-    >
+    <Box onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
       <canvas ref={canvasRef} />
       <Box
         sx={{
@@ -200,7 +192,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
           right: "20px",
           bottom: "20px",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
           gap: "10px",
           background: "#fff",
@@ -210,35 +202,13 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <button
-          onClick={() => handleZoom(true)}
-          style={{
-            padding: "5px 10px",
-            border: "none",
-            background: "#007bff",
-            color: "#fff",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Zoom In
-        </button>
-        <button
-          onClick={() => handleZoom(false)}
-          style={{
-            padding: "5px 10px",
-            border: "none",
-            background: "#007bff",
-            color: "#fff",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Zoom Out
-        </button>
-        <div style={{ fontSize: "12px", color: "#333" }}>
-          Zoom: {Math.round(zoomLevel * 100)}%
-        </div>
+        <IconButton onClick={() => handleZoom(false)}>
+          <Remove />
+        </IconButton>
+        <Typography variant="body2">{Math.round(zoomLevel * 100)}%</Typography>
+        <IconButton onClick={() => handleZoom(true)}>
+          <Add />
+        </IconButton>
       </Box>
     </Box>
   );

@@ -1,6 +1,7 @@
-import { ExpandLess, ExpandMore, Folder } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FC, useState } from "react";
+
 import { AssetCard } from "./asset-card";
 import { TextureCard } from "../texture/texture-card";
 

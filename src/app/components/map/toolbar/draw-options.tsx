@@ -1,50 +1,21 @@
+import "@rc-component/color-picker/assets/index.css";
+
 import {
   Box,
-  FormControl,
-  InputLabel,
-  Slider,
-  Select,
-  MenuItem,
   Button,
+  FormControl,
   IconButton,
+  MenuItem,
+  Select,
+  Slider,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import ColorPicker from "@rc-component/color-picker";
-import "@rc-component/color-picker/assets/index.css";
-import { useMapStore } from "../../../../store";
-import { Brush, Texture } from "../../../../types";
-import PaletteIcon from "@mui/icons-material/Palette";
-import { CatalogFolder } from "./assets/catalog-folder";
 
-// TODO resize textures
-const textures = [
-  // https://www.pinterest.com/pin/356628864238523403/
-  {
-    name: "Stone",
-    src: "https://i.pinimg.com/736x/65/c3/27/65c32776dff4d7c630adec9a030c7666.jpg",
-  },
-  {
-    name: "Grass",
-    src: "https://i.pinimg.com/736x/5b/31/d8/5b31d8709b8b12767cb1f1edfd214899.jpg",
-  },
-  {
-    name: "Dirt road",
-    src: "https://i.pinimg.com/736x/47/aa/1f/47aa1fd416c8efb6904292bdd9209a02.jpg",
-  },
-  {
-    name: "mossy cobblestone",
-    src: "https://i.pinimg.com/736x/6d/7f/a9/6d7fa9b3844ebb1431a3471f2db9474f.jpg",
-  },
-  {
-    name: "wooden floor",
-    src: "https://i.pinimg.com/736x/ee/85/c5/ee85c523aafff237f32416e5fe276114.jpg",
-  },
-  {
-    name: "ocean water",
-    src: "https://i.pinimg.com/736x/f1/a7/ed/f1a7ed42b092b013089dafb1774ef2ea.jpg",
-  },
-];
+import { Brush } from "../../../types";
+import { CatalogFolder } from "./assets/catalog-folder";
+import ColorPicker from "@rc-component/color-picker";
+import { useMapStore } from "../../../store";
 
 export const DrawOptions = () => {
   const [lineWidth, setLineWidth] = useState(5);
@@ -55,7 +26,8 @@ export const DrawOptions = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [catalog, setCatalog] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState([]);
+  const preferences = useMapStore((state) => state.preferences.textures);
+  const [favorites, setFavorites] = useState(preferences);
 
   useEffect(() => {
     const fetchCatalog = async () => {
@@ -136,9 +108,11 @@ export const DrawOptions = () => {
                 folderData={{ folder: "textures", assets: catalog }}
                 favorites={favorites}
                 onItemClick={(data) => setTexture(data)}
-                addToFavorites={(data) =>
-                  setFavorites((prev) => [...prev, data])
-                }
+                addToFavorites={(data) => {
+                  const newFavorites = [...favorites, data];
+                  setFavorites(newFavorites);
+                  useMapStore.getState().saveTexturePreferences(newFavorites);
+                }}
               />
             )}
             <CatalogFolder

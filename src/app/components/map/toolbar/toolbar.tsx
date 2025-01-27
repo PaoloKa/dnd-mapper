@@ -1,22 +1,36 @@
-import { Draw, Face, Forest, Mouse } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import { FC, useState } from "react";
-import { useMapStore } from "../../../../store";
-import { DrawOptions } from "./draw-options";
-import { AssetOptions } from "./assets/asset-options";
+import { Draw, Face, Forest, Mouse } from "@mui/icons-material";
+import { FC, useEffect, useState } from "react";
 
-type ToolbarProps = {};
+import { AssetOptions } from "./assets/asset-options";
+import { DrawOptions } from "./draw-options";
+import { useMapStore } from "../../../store";
 
 type ContentOptions = "draw" | "users" | "assets";
 
-export const Toolbar: FC<ToolbarProps> = ({}) => {
+export const Toolbar: FC = ({}) => {
   const [content, setContent] = useState<ContentOptions>();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      const preferences = await fetch("/api/preferences");
+      const data = await preferences.json();
+      if (data && Object.keys(data).length > 0) {
+        useMapStore.setState({ preferences: data.preferences });
+      }
+      setLoading(false);
+    };
+    fetchPreferences();
+  }, []);
 
   const handleDrawClick = (type: ContentOptions) => {
     if (content === type) return setContent(undefined);
     setContent(type);
     useMapStore.setState({ activeTool: "draw" });
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row" }}>

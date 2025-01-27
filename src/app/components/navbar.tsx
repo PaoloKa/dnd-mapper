@@ -1,8 +1,10 @@
 "use client";
-import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
-import Link from "next/link";
-import { Home as HomeIcon } from "@mui/icons-material";
+
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
+
 import AuthButton from "./auth/auth-button";
+import { Home as HomeIcon } from "@mui/icons-material";
+import Link from "next/link";
 
 export const NavBar = () => {
   return (

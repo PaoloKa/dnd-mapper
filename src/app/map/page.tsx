@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, createTheme, ThemeProvider } from "@mui/material";
-import MapCanvas from "./components/canvas-map";
-import { Toolbar } from "./components/toolbar/toolbar";
+import { Box, ThemeProvider, createTheme } from "@mui/material";
+
+import MapCanvas from "../components/map/canvas-map";
+import { Toolbar } from "../components/map/toolbar/toolbar";
 
 const theme = createTheme({
   palette: {

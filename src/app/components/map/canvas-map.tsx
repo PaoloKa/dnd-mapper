@@ -8,18 +8,18 @@ import {
   Line,
   PatternBrush,
   PencilBrush,
+  Point,
   SprayBrush,
 } from "fabric";
 import React, { FC, useEffect, useRef, useState } from "react";
 
 import { useMapStore } from "../../store";
 
-type MapCanvasProps = {};
-
-const MapCanvas: FC<MapCanvasProps> = ({}) => {
+const MapCanvas: FC = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasObjectRef = useRef<Canvas | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1); // Default zoom level
+  const activeTool = useMapStore((state) => state.activeTool);
 
   useEffect(() => {
     const updateCanvasSize = () => {
@@ -44,12 +44,61 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
     };
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasObjectRef.current;
+    if (!canvas) return;
+    if (activeTool !== "pan") return;
+
+    let isPanning = false; // Flag to track if panning is active
+    let lastPosX = 0; // Last x position of the mouse
+    let lastPosY = 0; // Last y position of the mouse
+
+    const handleMouseDown = (e: MouseEvent) => {
+      if (useMapStore.getState().activeTool === "pan") {
+        isPanning = true;
+        const { clientX, clientY } = e;
+        lastPosX = clientX;
+        lastPosY = clientY;
+        canvas.selection = false; // Disable selection during panning
+      }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isPanning) {
+        const { clientX, clientY } = e;
+        const deltaX = clientX - lastPosX;
+        const deltaY = clientY - lastPosY;
+        lastPosX = clientX;
+        lastPosY = clientY;
+
+        // Pan the canvas
+        canvas.relativePan(new Point(deltaX, deltaY));
+      }
+    };
+
+    const handleMouseUp = () => {
+      isPanning = false;
+      canvas.selection = true; // Re-enable selection after panning
+    };
+
+    // Add event listeners to the canvas container
+    const canvasElement = canvas.upperCanvasEl;
+    canvasElement.addEventListener("mousedown", handleMouseDown);
+    canvasElement.addEventListener("mousemove", handleMouseMove);
+    canvasElement.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      // Remove event listeners on cleanup
+      canvasElement.removeEventListener("mousedown", handleMouseDown);
+      canvasElement.removeEventListener("mousemove", handleMouseMove);
+      canvasElement.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [activeTool]);
+
   // Set initial size
 
   useEffect(() => {
     if (!canvasRef.current) return;
-
-    console.log(canvasRef.current.clientWidth);
 
     const mapCanvas = document.getElementById("map-canvas");
     // Initialize Fabric.js canvas
@@ -57,6 +106,7 @@ const MapCanvas: FC<MapCanvasProps> = ({}) => {
       backgroundColor: "#fff",
       width: mapCanvas?.clientWidth!,
       height: mapCanvas?.clientHeight!,
+      zoom: 0.1,
     });
 
     // Function to draw the grid

@@ -1,5 +1,5 @@
 import { Box, IconButton } from "@mui/material";
-import { Draw, Face, Forest, Mouse } from "@mui/icons-material";
+import { Draw, Face, Forest, Mouse, PanTool } from "@mui/icons-material";
 import { FC, useEffect, useState } from "react";
 
 import { AssetOptions } from "./assets/asset-options";
@@ -53,6 +53,13 @@ export const Toolbar: FC = ({}) => {
           onClick={() => useMapStore.setState({ activeTool: "move" })}
         >
           <Mouse sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }} />
+        </IconButton>
+        <IconButton
+          onClick={() => useMapStore.setState({ activeTool: "pan" })}
+        >
+          <PanTool
+            sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }}
+          />
         </IconButton>
         <IconButton onClick={() => handleDrawClick("users")}>
           <Face sx={{ color: "#D52A2A", textShadow: "2px 2px 4px #000000" }} />

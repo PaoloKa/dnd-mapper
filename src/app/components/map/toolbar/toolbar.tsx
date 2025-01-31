@@ -6,6 +6,7 @@ import { AssetOptions } from "./assets/asset-options";
 import { DrawOptions } from "./draw-options";
 import { ToolbarButton } from "./toolbar-button";
 import { useMapStore } from "../../../store";
+import UserOptions from "./users/users-options";
 
 type ContentOptions = "draw" | "users" | "assets";
 
@@ -17,6 +18,17 @@ export const Toolbar: FC = ({}) => {
   useEffect(() => {
     const fetchPreferences = async () => {
       const preferences = await fetch("/api/preferences");
+      if (!preferences.ok) {
+        console.error("Failed to fetch preferences");
+        useMapStore.setState({
+          preferences: {
+            textures: [],
+            assets: [],
+          },
+        });
+        setLoading(false);
+        return;
+      }
       const data = await preferences.json();
       if (data && Object.keys(data).length > 0) {
         useMapStore.setState({ preferences: data.preferences });
@@ -89,7 +101,7 @@ export const Toolbar: FC = ({}) => {
           }}
         >
           {content === "draw" && <DrawOptions />}
-          {content === "users" && <h1>Users</h1>}
+          {content === "users" && <UserOptions />}
           {content === "assets" && <AssetOptions />}
         </Box>
       )}

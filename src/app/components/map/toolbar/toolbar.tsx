@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, Divider, IconButton, useTheme } from "@mui/material";
 import { Draw, Face, Forest, Mouse, PanTool } from "@mui/icons-material";
 import { FC, useEffect, useState } from "react";
 
@@ -14,6 +14,7 @@ export const Toolbar: FC = ({}) => {
   const [content, setContent] = useState<ContentOptions>();
   const [loading, setLoading] = useState(true);
   const activeTool = useMapStore((state) => state.activeTool);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchPreferences = async () => {
@@ -66,16 +67,6 @@ export const Toolbar: FC = ({}) => {
           active={content === "draw"}
         />
         <ToolbarButton
-          Icon={Mouse}
-          onClick={() => useMapStore.setState({ activeTool: "move" })}
-          active={activeTool === "move"}
-        />
-        <ToolbarButton
-          Icon={PanTool}
-          onClick={() => useMapStore.setState({ activeTool: "pan" })}
-          active={activeTool === "pan"}
-        />
-        <ToolbarButton
           Icon={Face}
           onClick={() => handleDrawClick("users")}
           active={content === "users"}
@@ -85,6 +76,23 @@ export const Toolbar: FC = ({}) => {
           Icon={Forest}
           onClick={() => handleDrawClick("assets")}
           active={content === "assets"}
+        />
+        <Box sx={{my: 2}}>
+          <Divider
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+            }}
+          />
+        </Box>
+        <ToolbarButton
+          Icon={Mouse}
+          onClick={() => useMapStore.setState({ activeTool: "move" })}
+          active={activeTool === "move"}
+        />
+        <ToolbarButton
+          Icon={PanTool}
+          onClick={() => useMapStore.setState({ activeTool: "pan" })}
+          active={activeTool === "pan"}
         />
       </Box>
       {content && (

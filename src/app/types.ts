@@ -13,3 +13,10 @@ export type Texture = {
   name: string;
   src: string;
 };
+
+
+export type Character = {
+  id: number;
+  name: string;
+  role: string;
+}

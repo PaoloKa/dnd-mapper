@@ -14,9 +14,45 @@ export type Texture = {
   src: string;
 };
 
-
 export type Character = {
   id: number;
   name: string;
-  role: string;
-}
+  role: DndRole;
+  race: DndRace;
+  lifepoints: number;
+  avatar: string;
+  armorClass: number;
+  movementSpeed: number;
+};
+
+export type DndRole =
+  | "Fighter"
+  | "Rogue"
+  | "Wizard"
+  | "Cleric"
+  | "Paladin"
+  | "Ranger";
+export type DndRace =
+  | "Human"
+  | "Elf"
+  | "Dwarf"
+  | "Orc"
+  | "Tiefling"
+  | "Dragonborn";
+
+export const dndRoles: DndRole[] = [
+  "Fighter",
+  "Rogue",
+  "Wizard",
+  "Cleric",
+  "Paladin",
+  "Ranger",
+];
+export const races: DndRace[] = [
+  "Human",
+  "Elf",
+  "Dwarf",
+  "Orc",
+  "Tiefling",
+  "Dragonborn",
+];
